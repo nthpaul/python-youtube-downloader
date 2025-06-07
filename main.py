@@ -63,15 +63,17 @@ def download_playlist():
 
     try:
         print(f"Downloading videos from playlist {playlist.title}.")
-        for video in playlist.videos:
+        for idx, video in enumerate(playlist.videos):
+            print(f"Downloading video: {idx}_{video.title}.")
             try:
                 video.register_on_progress_callback(on_progress)
-                print(f"Downloading video: {video.title}.")
                 stream = video.streams.get_highest_resolution()
                 if custom_directory:
-                    stream.download(output_path=custom_directory)
+                    stream.download(
+                        output_path=custom_directory, filename_prefix=f"{idx}_"
+                    )
                 else:
-                    stream.download()
+                    stream.download(filename_prefix=f"{idx}_")
             except Exception as e:
                 print(f"Failed to download {video.title}.")
         print(f"Finished downloading from playlist: {playlist.title}.")

@@ -92,7 +92,7 @@ def download_channel():
     channel = Channel(channel_url)
 
     try:
-        print(f"Downloading videos from channel {channel.title}.")
+        print(f"Downloading videos from channel {channel.channel_name}.")
         for idx, video in enumerate(channel.videos):
             print(f"Downloading video: {idx}_{video.title}.")
             try:
@@ -105,8 +105,8 @@ def download_channel():
                 else:
                     stream.download(filename_prefix=f"{idx}_")
             except Exception as e:
-                print(f"Failed to download {channel.title}.")
-        print(f"Finished downloading from channel: {channel.title}.")
+                print(f"Failed to download {channel.channel_name}.")
+        print(f"Finished downloading from channel: {channel.channel_name}.")
     except Exception as e:
         print(f"Error fetching channel: {e}")
         return

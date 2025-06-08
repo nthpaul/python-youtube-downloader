@@ -1,7 +1,7 @@
 import os
 import sys
 
-from pytubefix import Playlist, YouTube
+from pytubefix import Channel, Playlist, YouTube
 from pytubefix.cli import on_progress
 
 
@@ -17,6 +17,7 @@ def print_menu():
     print("=" * 20)
     print("1. Download Video")
     print("2. Download Playlist")
+    print("3. Download all videos from a channel")
 
 
 def get_user_input(prompt):
@@ -82,6 +83,35 @@ def download_playlist():
         return
 
 
+def download_channel():
+    channel_url = get_user_input("Enter the channel URL: ")
+    custom_directory = get_user_input(
+        "Enter the directory to save the videos (or press Enter to use current directory): "
+    )
+
+    channel = Channel(channel_url)
+
+    try:
+        print(f"Downloading videos from channel {channel.title}.")
+        for idx, video in enumerate(channel.videos):
+            print(f"Downloading video: {idx}_{video.title}.")
+            try:
+                video.register_on_progress_callback(on_progress)
+                stream = video.streams.get_highest_resolution()
+                if custom_directory:
+                    stream.download(
+                        output_path=custom_directory, filename_prefix=f"{idx}_"
+                    )
+                else:
+                    stream.download(filename_prefix=f"{idx}_")
+            except Exception as e:
+                print(f"Failed to download {channel.title}.")
+        print(f"Finished downloading from channel: {channel.title}.")
+    except Exception as e:
+        print(f"Error fetching channel: {e}")
+        return
+
+
 def main():
     """Main application loop."""
     clear_screen()
@@ -92,8 +122,10 @@ def main():
             choice = get_user_input("\nChoose an option: ")
             if choice == "1":
                 download_video()
-            if choice == "2":
+            elif choice == "2":
                 download_playlist()
+            elif choice == "3":
+                download_channel()
             else:
                 print("Invalid choice. Please try again.")
         except KeyboardInterrupt:
